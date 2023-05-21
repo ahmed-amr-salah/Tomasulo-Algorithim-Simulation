@@ -1,4 +1,4 @@
-
+package com.example.tomasulo;
 
 public class Instruction {
     private String op;
@@ -7,14 +7,18 @@ public class Instruction {
     private int writeBack;
     private int startExecute;
     private int type;
-
-    public Instruction(String op, int issue, int execute, int writeBack, int startExecute, int type) {
+    private int numberOfCycles;
+    // Type--> "Load =1, Store=2,Archthimatic =3,Return =4"
+    public Instruction(String op) {
         this.op = op;
-        this.issue = issue;
-        this.execute = execute;
-        this.writeBack = writeBack;
-        this.startExecute = startExecute;
-        this.type = type;
+        this.issue = -1;
+        this.execute = -1;
+        this.writeBack = -1;
+        this.startExecute = -1;
+        if(op=="LOAD"){this.type = 1;}
+        else if(op=="STORE"){this.type = 2;}
+        else if(op=="ADD" ||op=="ADDI"||op=="NEG"||op=="SLL"||op=="NAND"  ){this.type = 3;}
+        else if(op=="JAL" ||op=="RET"){this.type = 5;}
     }
 
     // Getters and setters for the properties

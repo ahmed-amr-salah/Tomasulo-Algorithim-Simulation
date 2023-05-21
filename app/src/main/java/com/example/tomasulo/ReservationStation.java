@@ -1,14 +1,16 @@
 package com.example.tomasulo;
 
 
-public class LoadReservationStation {
+public class ReservationStation {
 
     private int Qj;
+    private int id;
+    private int Qk;
     private int Vj;
+    private int Vk;
     private int address;
     private String op;
     private boolean Ready;
-    private int numberOfCycles;
     private int immediate;
     private Instruction instruction;
 
@@ -19,18 +21,9 @@ public class LoadReservationStation {
 
     public void setInstruction(Instruction instruction) {
         this.instruction = instruction;
+        changeTheState(instruction);
     }
 
-    public LoadReservationStation() {
-        Qj = -1;
-        Vj = -1;
-        this.address = -1;
-        this.op = "Load";
-        Ready = true;
-        this.numberOfCycles = 2;
-        this.immediate = immediate;
-        this.instruction = null;
-    }
 
     public void setQj(int qj) {
         Qj = qj;
@@ -52,9 +45,6 @@ public class LoadReservationStation {
         Ready = ready;
     }
 
-    public void setNumberOfCycles(int numberOfCycles) {
-        this.numberOfCycles = numberOfCycles;
-    }
 
     public void setImmediate(int immediate) {
         this.immediate = immediate;
@@ -80,11 +70,15 @@ public class LoadReservationStation {
         return Ready;
     }
 
-    public int getNumberOfCycles() {
-        return numberOfCycles;
-    }
 
     public int getImmediate() {
         return immediate;
     }
+
+    public void changeTheState(Instruction instruction)
+    {
+        this.op = instruction.getOp();
+        this.Ready = false;
+    }
+
 }
