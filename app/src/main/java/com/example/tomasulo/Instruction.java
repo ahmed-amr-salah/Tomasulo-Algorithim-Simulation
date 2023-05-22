@@ -116,4 +116,12 @@ public class Instruction {
     public void setPc(int pc) {
         this.pc = pc;
     }
+
+    public void reset()
+    {
+        issue = -1;
+        execute = -1;
+        writeBack = -1;
+        startExecute= -1;
+    }
 }

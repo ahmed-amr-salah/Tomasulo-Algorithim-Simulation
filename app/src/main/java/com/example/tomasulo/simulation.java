@@ -87,15 +87,28 @@ public class simulation extends AppCompatActivity {
                 issue();
                 Log.e("Ahmed ","Ins 1 issue :" + Integer.toString(ListOfInstructions.get(0).getIssue()));
                 Log.e("Ahmed ","Ins 2 issue :" + Integer.toString(ListOfInstructions.get(1).getIssue()));
+                Log.e("Ahmed ","Ins 3 issue :" + Integer.toString(ListOfInstructions.get(2).getIssue()));
+                Log.e("Ahmed ","Ins 4 issue :" + Integer.toString(ListOfInstructions.get(3).getIssue()));
+                Log.e("Ahmed ","Ins 5 issue :" + Integer.toString(ListOfInstructions.get(4).getIssue()));
+
                 //Log.e("Ahmed ",Integer.toString(ListOfInstructions.get(2).getIssue()));
                 execute();
                 Log.e("Ahmed ","Ins 1 Execute :" + Integer.toString(ListOfInstructions.get(0).getExecute()));
                 Log.e("Ahmed ","Ins 2 Execute :" +Integer.toString(ListOfInstructions.get(1).getExecute()));
-               // Log.e("Ahmed ",Integer.toString(ListOfInstructions.get(2).getExecute()));
+                Log.e("Ahmed ","Ins 3 Execute :" +Integer.toString(ListOfInstructions.get(2).getExecute()));
+                Log.e("Ahmed ","Ins 4 Execute :" +Integer.toString(ListOfInstructions.get(3).getExecute()));
+                Log.e("Ahmed ","Ins 5 Execute :" +Integer.toString(ListOfInstructions.get(4).getExecute()));
+
+
+                // Log.e("Ahmed ",Integer.toString(ListOfInstructions.get(2).getExecute()));
                 WB();
                 Log.e("Ahmed ","Ins 1 WB :" +Integer.toString(ListOfInstructions.get(0).getWriteBack()));
                 Log.e("Ahmed ","Ins 2 WB :" +Integer.toString(ListOfInstructions.get(1).getWriteBack()));
-               // Log.e("Ahmed ",Integer.toString(ListOfInstructions.get(2).getWriteBack()));
+                Log.e("Ahmed ","Ins 3 WB :" +Integer.toString(ListOfInstructions.get(2).getWriteBack()));
+                Log.e("Ahmed ","Ins 4 WB :" +Integer.toString(ListOfInstructions.get(3).getWriteBack()));
+                Log.e("Ahmed ","Ins 5 WB :" +Integer.toString(ListOfInstructions.get(4).getWriteBack()));
+
+                // Log.e("Ahmed ",Integer.toString(ListOfInstructions.get(2).getWriteBack()));
                 cycle = cycle + 1;
             }
         });
@@ -356,7 +369,6 @@ public class simulation extends AppCompatActivity {
             ListOfInstructions.get(counter).setIssue(cycle);
             ListOfRS.get(AvailableRS).setInstructionIndex(counter);
             counter++;
-
         }
     }
 
@@ -443,6 +455,7 @@ public class simulation extends AppCompatActivity {
                     if(ListOfRS.get(i).getNeededCycles() == 0)
                     {
                         ListOfRS.get(i).setFinished(true);
+                        ListOfRS.get(i).setExecuting(false);
                         int result = finishedExecution(Station);
                         int address = finishedExecutionExtra(Station);
                         ListOfRS.get(i).setResult(result);
@@ -466,6 +479,7 @@ public class simulation extends AppCompatActivity {
                         if (ListOfRS.get(i).getNeededCycles() == 0)
                         {
                             ListOfRS.get(i).setFinished(true);
+                            ListOfRS.get(i).setExecuting(false);
                             int result = finishedExecution(Station);
                             int address = finishedExecutionExtra(Station);
                             ListOfRS.get(i).setResult(result);
@@ -520,63 +534,57 @@ public class simulation extends AppCompatActivity {
     private boolean readyToWrite(ReservationStation S)
     {
         Instruction inst = ListOfInstructions.get(S.getInstructionIndex());
-        if(inst.getExecute() == cycle)
+        if(inst.getExecute()+1 != cycle)
         {
             return false;
         }
-        if(inst.getOp().equals("BEQ"))
-        {
-            foundBranch = false;
-            if(S.getResult() == 1)
-            {
-                flush();
+        else {
+            if (inst.getOp().equals("BNE")) {
+                foundBranch = false;
+                if (S.getResult() == 1) {
+                    flush();
+                    counter = S.getAddress();
+                }
+            } else if (inst.getOp().equals("JAL") || inst.getOp().equals("RET")) {
+                needJump = false;
                 counter = S.getAddress();
+            } else if (inst.getOp().equals("STORE")) {
+                memory[S.getAddress() + S.getVj()] = S.getResult();
+            } else if (inst.getOp().equals("ADD") || inst.getOp().equals("ADDI") || inst.getOp().equals("NOR") || inst.getOp().equals("LOAD") || inst.getOp().equals("JAL") || inst.getOp().equals("SLL")) {
+                ListOfRegisters.get(inst.getRd().getIndex()).setData(S.getResult());
+                if (ListOfRegisters.get(inst.getRd().getIndex()).getQi() == S.getId())
+                    ListOfRegisters.get(inst.getRd().getIndex()).setQi(-1);
+            } else if (inst.getOp().equals("NEG")) {
+                ListOfRegisters.get(inst.getRs1().getIndex()).setData(S.getResult());
+                if (ListOfRegisters.get(inst.getRs1().getIndex()).getQi() == S.getId())
+                    ListOfRegisters.get(inst.getRs1().getIndex()).setQi(-1);
             }
+            ListOfInstructions.get(S.getInstructionIndex()).setWriteBack(cycle);
+//            ListOfInstructions.get(S.getInstructionIndex()).reset();
+            CDBSource = ListOfRS.get(S.getId()).getId();
+            CDBValue = ListOfRS.get(S.getId()).getResult();
+            ListOfRS.get(S.getId()).reset();
+            return true;
         }
-        else if(inst.getOp().equals("JAL")||inst.getOp().equals("RET"))
-        {
-            needJump = false;
-            counter = S.getAddress();
-        }
-        else if(inst.getOp().equals("STORE"))
-        {
-            memory[S.getAddress() + S.getVj() ] = S.getResult();
-        }
-        else if (inst.getOp().equals("ADD") || inst.getOp().equals("ADDI")|| inst.getOp().equals("NOR") || inst.getOp().equals("LOAD") || inst.getOp().equals("JAL") || inst.getOp().equals("SLL"))
-        {
-            ListOfRegisters.get(inst.getRd().getIndex()).setData(S.getResult());
-            if (ListOfRegisters.get(inst.getRd().getIndex()).getQi() == S.getId())
-                ListOfRegisters.get(inst.getRd().getIndex()).setQi(-1);
-        }
-        else if(inst.getOp().equals("NEG"))
-        {
-            ListOfRegisters.get(inst.getRs1().getIndex()).setData(S.getResult());
-            if (ListOfRegisters.get(inst.getRs1().getIndex()).getQi() == S.getId())
-                ListOfRegisters.get(inst.getRs1().getIndex()).setQi(-1);
-        }
-        ListOfInstructions.get(S.getInstructionIndex()).setWriteBack(cycle);
-        CDBSource = ListOfRS.get(S.getId()).getId();
-        CDBValue = ListOfRS.get(S.getId()).getResult();
-        ListOfRS.get(S.getId()).reset();
-        return true;
     }
     private void WB()
     {
-
         for(int i = 0; i < ListOfRS.size(); i++)
         {
-            if(ListOfRS.get(i).isFinished() == false)
+            if(ListOfRS.get(i).isFinished() == true && ListOfRS.get(i).isExecuting == false && ListOfRS.get(i).isBusy() == true)
             {
-                continue;
-            }
-            else
-            {
-                if(checkForWAW(ListOfRS.get(i)) == false)
+                for(int j = 0; j < ListOfRegisters.size(); j++)
                 {
-
-                    if(readyToWrite((ListOfRS.get(i))))
-                        break;
-
+                    if(ListOfRS.get(i).getId() == ListOfRegisters.get(j).getQi())
+                    {
+                        if(checkForWAW(ListOfRS.get(i)) == false)
+                        {
+                            if(readyToWrite(ListOfRS.get(i)) == true)
+                            {
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }

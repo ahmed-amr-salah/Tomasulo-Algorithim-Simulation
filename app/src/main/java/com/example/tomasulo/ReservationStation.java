@@ -127,7 +127,7 @@ public class ReservationStation
     public void setAfterBranching(boolean afterBranching) {
         this.afterBranching = afterBranching;
     }
-    void reset()
+   void reset()
     {
         Qj = -1;
         Qk = -1;
