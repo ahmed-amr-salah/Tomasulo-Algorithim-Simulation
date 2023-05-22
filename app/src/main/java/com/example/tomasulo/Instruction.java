@@ -7,13 +7,21 @@ public class Instruction {
     private int writeBack;
     private int startExecute;
     private int type;
-    private int numberOfCycles;
-    // Type--> "Load =1, Store=2,Archthimatic =3,Return =4"
-    public Instruction(String op) {
+    public Register rs1 = new Register();
+    public Register rs2 = new Register();
+    public Register rd= new Register();
+    private int imm;
+    private int pc;
+
+    public Instruction(String op,int rs1,int rs2,int rd,int imm) {
         this.op = op;
         this.issue = -1;
         this.execute = -1;
         this.writeBack = -1;
+        this.imm = imm;
+        this.rs1.setIndex(rs1);
+        this.rs2.setIndex(rs2);
+        this.rd.setIndex(rd);
         this.startExecute = -1;
         if(op=="LOAD"){this.type = 1;}
         else if(op=="STORE"){this.type = 2;}
@@ -68,5 +76,44 @@ public class Instruction {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public Register getRs1() {
+        return rs1;
+    }
+
+    public void setRs1(Register rs1) {
+        this.rs1 = rs1;
+    }
+
+    public Register getRs2() {
+        return rs2;
+    }
+
+    public void setRs2(Register rs2) {
+        this.rs2 = rs2;
+    }
+
+
+    public int getImm() {
+        return imm;
+    }
+
+    public void setImm(int imm) {
+        this.imm = imm;
+    }
+    public Register getRd() {
+        return rd;
+    }
+
+    public void setRd(Register rd) {
+        this.rd = rd;
+    }
+    public int getPc() {
+        return pc;
+    }
+
+    public void setPc(int pc) {
+        this.pc = pc;
     }
 }

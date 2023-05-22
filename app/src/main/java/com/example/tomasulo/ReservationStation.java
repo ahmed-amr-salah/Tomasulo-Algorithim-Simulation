@@ -1,6 +1,5 @@
 package com.example.tomasulo;
 
-
 public class ReservationStation
 {
     int neededCycles;
@@ -10,8 +9,12 @@ public class ReservationStation
     int address;
     boolean busy;
     boolean isExecuting;
+
+    boolean finished;
     int result;
     int id;
+
+    boolean afterBranching;
 
     public int getInstructionIndex() {
         return instructionIndex;
@@ -110,17 +113,39 @@ public class ReservationStation
     public void setId(int id) {
         this.id = id;
     }
+    public boolean isFinished() {
+        return finished;
+    }
 
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+    public boolean isAfterBranching() {
+        return afterBranching;
+    }
+
+    public void setAfterBranching(boolean afterBranching) {
+        this.afterBranching = afterBranching;
+    }
     void reset()
     {
-        Qj = 0;
-        Qk = 0;
-        Vj = 0;
-        Vk = 0;
+        Qj = -1;
+        Qk = -1;
+        Vj = -1;
+        Vk = -1;
         address = 0;
         boolean busy = false;
         boolean isExecuting = false;
         result = -1;
+        if(this.operation == "ADD" || this.operation == "LOAD" || this.operation == "STORE"  || this.operation == "NEG" ){
+            this.neededCycles = 2;
+        }
+        else if(this.operation == "BNE" || this.operation == "JAL" || this.operation == "NAND" ){
+            this.neededCycles = 2;
+        }
+        else if(this.operation == "SLL" ){
+            this.neededCycles = 8;
+        }
     }
 
 }

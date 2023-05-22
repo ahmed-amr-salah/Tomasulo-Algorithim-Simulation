@@ -1,14 +1,14 @@
 package com.example.tomasulo;
 
 public class Register {
-
     private int data;
     private int Qi;
-
+    private int index;
 
     public Register() {
         this.data = 0;
         Qi = -1;
+        index =-1;
     }
 
     public void setData(int data) {
@@ -25,5 +25,13 @@ public class Register {
 
     public int getQi() {
         return Qi;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }
